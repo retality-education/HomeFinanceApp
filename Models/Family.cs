@@ -40,7 +40,7 @@ namespace HomeFinanceApp.Models
             var fm = MemberFactory.CreateFamilyMember(name, role, family, m1, m2);
 
             _familyMembers.Add(fm);
-            Notify(FamilyEvents.CreateMember, memberId: fm.Id);
+            Notify(FamilyEvents.CreateMember, memberId: fm.Id, summa: (int)role);
         }
         private void AddMembers()
         {
