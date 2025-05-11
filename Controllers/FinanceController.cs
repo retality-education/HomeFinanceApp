@@ -1,5 +1,6 @@
 ﻿using HomeFinanceApp.Models;
-using HomeFinanceApp.Views;
+
+using HomeFinanceApp.Views.Forms;
 using HomeFinanceApp.Views.Interfaces;
 using System;
 using System.Collections.Generic;

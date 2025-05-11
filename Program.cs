@@ -1,6 +1,7 @@
 using HomeFinanceApp.Controllers;
 using HomeFinanceApp.Models;
 using HomeFinanceApp.Views;
+using HomeFinanceApp.Views.Forms;
 using System.Runtime.InteropServices;
 
 namespace HomeFinanceApp
@@ -17,11 +18,13 @@ namespace HomeFinanceApp
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            var model = new Family();
-            var form = new FinanceForm();
-            var controller = new FinanceController(model, form);
+            
+            var family = new Family();
+            var financeForm = new FinanceForm();
+            var financeController = new FinanceController(family, financeForm);
 
-            Application.Run(form);
+            Application.Run(financeForm);
+
         }
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

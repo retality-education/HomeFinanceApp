@@ -1,4 +1,4 @@
-﻿namespace HomeFinanceApp.Views
+﻿namespace HomeFinanceApp.Views.Forms
 {
     partial class FinanceForm
     {
@@ -39,6 +39,7 @@
             memberMoney2 = new PictureBox();
             memberMoney1 = new PictureBox();
             memberMoney4 = new PictureBox();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)table).BeginInit();
             ((System.ComponentModel.ISupportInitialize)savingsPicture).BeginInit();
             ((System.ComponentModel.ISupportInitialize)moneysPicture).BeginInit();
@@ -101,7 +102,7 @@
             button1.Name = "button1";
             button1.Size = new Size(94, 29);
             button1.TabIndex = 6;
-            button1.Text = "button1";
+            button1.Text = "Запустить";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -149,11 +150,22 @@
             memberMoney4.TabStop = false;
             memberMoney4.Visible = false;
             // 
+            // button2
+            // 
+            button2.Location = new Point(670, 2);
+            button2.Name = "button2";
+            button2.Size = new Size(161, 48);
+            button2.TabIndex = 11;
+            button2.Text = "Показать статистику семьи";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // FinanceForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(968, 521);
+            Controls.Add(button2);
             Controls.Add(memberMoney4);
             Controls.Add(memberMoney1);
             Controls.Add(memberMoney2);
@@ -189,5 +201,6 @@
         private PictureBox memberMoney2;
         private PictureBox memberMoney1;
         private PictureBox memberMoney4;
+        private Button button2;
     }
 }

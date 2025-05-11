@@ -42,7 +42,7 @@ namespace HomeFinanceApp.Factories
                 );
 
             // Проверяем типы по порядку от Utilities (1) до Hobby (6)
-            for (int typeValue = 1; typeValue <= 6; typeValue++)
+            for (int typeValue = 1; typeValue <= 7; typeValue++)
             {
                 var currentType = (ExpenseTypes)typeValue;
 
@@ -72,7 +72,7 @@ namespace HomeFinanceApp.Factories
             }
 
             // Если во всех типах уже по 2+ подтипа - выбираем полностью случайный
-            var randomType = (ExpenseTypes)_random.Next(1, 7); // 1-6 (без Food)
+            var randomType = (ExpenseTypes)_random.Next(2, 8); // 2-7 (без Food)
             var allSubTypes = Enum.GetValues(typeof(ExpenseSubTypes))
                 .Cast<ExpenseSubTypes>()
                 .Where(st => (int)st / 10 == (int)randomType)
@@ -111,7 +111,7 @@ namespace HomeFinanceApp.Factories
         };
 
             // Добавляем 1-2 случайные потребности в зависимости от роли
-            int count = _random.Next(1, 3);
+            int count = _random.Next(1, 5);
 
             for (int i = 0; i < count; i++)
             {

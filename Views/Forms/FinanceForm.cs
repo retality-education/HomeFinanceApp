@@ -1,6 +1,7 @@
 ﻿using HomeFinanceApp.Controllers;
 using HomeFinanceApp.Core.Enums;
 using HomeFinanceApp.Core.Interfaces;
+using HomeFinanceApp.Models;
 using HomeFinanceApp.Services;
 using HomeFinanceApp.Views.Forms;
 using HomeFinanceApp.Views.Interfaces;
@@ -15,9 +16,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace HomeFinanceApp.Views
+namespace HomeFinanceApp.Views.Forms
 {
     internal partial class FinanceForm : Form, IFinanceView
     {
@@ -51,6 +51,10 @@ namespace HomeFinanceApp.Views
         private void button1_Click(object sender, EventArgs e)
         {
             financeController.Start();
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ShowFamilyStatistics();
         }
 
         #region Animation Methods
@@ -127,6 +131,38 @@ namespace HomeFinanceApp.Views
                     member.BringToFront();
             });
             return member;
+        }
+        #endregion
+
+        #region New Methods for Statistics
+        public void ShowMemberStatistics(int memberId)
+        {
+            var stat = financeController.GetStatByRoleId(_idToRole[memberId]);
+            string title = $"Статистика {_membersPictures[memberId].Tag}";
+            var statsForm = new FinanceStatsForm(stat, title);
+            statsForm.Show();
+        }
+
+        public void ShowFamilyStatistics()
+        {
+            var stats = financeController.GetStatOfAllMembers();
+            var combinedStat = CombineStats(stats);
+            var statsForm = new FinanceStatsForm(combinedStat, "Общая статистика семьи");
+            statsForm.Show();
+        }
+
+        private Stat CombineStats(List<Stat> stats)
+        {
+            var combined = new Stat();
+
+            foreach (var stat in stats)
+            {
+                combined.wasteMoneyOnCredits.AddRange(stat.wasteMoneyOnCredits);
+                combined.wasteMoneyOnExpenses.AddRange(stat.wasteMoneyOnExpenses);
+                combined.incomeMoneyToFamily.AddRange(stat.incomeMoneyToFamily);
+            }
+
+            return combined;
         }
         #endregion
 

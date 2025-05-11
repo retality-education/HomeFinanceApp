@@ -22,7 +22,7 @@ namespace HomeFinanceApp.Services
                 int subtypeValue = (int)subtype % 10; // Получаем подтип (вторая цифра)
 
                 // Генерируем случайный множитель 1.xxxx
-                decimal multiplier = 1 + _random.Next(1000, 10000) / 10000m;
+                decimal multiplier = 1 + _random.Next(1000, 10000) / 10m;
 
                 // Рассчитываем цену: базовый тип * подтип * множитель
                 decimal price = baseValue * subtypeValue * multiplier;

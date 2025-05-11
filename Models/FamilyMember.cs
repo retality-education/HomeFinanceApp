@@ -54,9 +54,9 @@ namespace HomeFinanceApp.Models
         {
             while (true)
             {
-                stat.Clear();
-
                 _startNewMonth.WaitOne(); //Ждём пока начнётся новый месяц
+                
+                stat.Clear();
 
                 Thread.Sleep(1000);
 
@@ -91,7 +91,11 @@ namespace HomeFinanceApp.Models
         private void UpdateMoneyIncomes()
         {
             incomes.RemoveAll(x => x.IncomeType == IncomeTypes.Gift || x.IncomeType == IncomeTypes.Lottery);
-            foreach(var x in incomes)
+
+            LastMonthIncome = MonthlyIncome;
+            MonthlyIncome = 0;
+            
+            foreach (var x in incomes)
             {
                 int chance = (_rand.Next(0, 2) == 1) ? 1 : -1; 
                 //прибавляем к заработку 10% или убираем 10%,  с шансом 50%
