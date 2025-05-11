@@ -9,6 +9,6 @@ namespace HomeFinanceApp.Core.Interfaces
 {
     internal interface IObserver
     {
-        void OnFamilyEvent(FamilyEvents eventType, int memberId, decimal money = 0);
+        void OnFamilyEvent(FamilyEvents eventType, int memberId = -1, decimal money = 0);
     }
 }

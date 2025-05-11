@@ -2,6 +2,7 @@
 using HomeFinanceApp.Core.Interfaces;
 using HomeFinanceApp.Factories;
 using HomeFinanceApp.Services;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +21,8 @@ namespace HomeFinanceApp.Models
         private Thread _thread;
         private readonly ManualResetEvent _monthStartEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent _waitDistibutionEvent = new ManualResetEvent(false);
+        private readonly CountdownEvent _moneyContributionEvent = new CountdownEvent(4);
+
         public decimal Savings { get; set; }
         public decimal TotalAmount { get; set; }
 
@@ -28,8 +31,6 @@ namespace HomeFinanceApp.Models
         public List<FamilyMember> _familyMembers = new();
 
         public Family() {
-            AddMembers();
-
             _thread = new Thread(StartNewMonth);
         }
         #region Family Setting
@@ -39,7 +40,7 @@ namespace HomeFinanceApp.Models
             var fm = MemberFactory.CreateFamilyMember(name, role, family, m1, m2);
 
             _familyMembers.Add(fm);
-            Notify(FamilyEvents.CreateMember, fm.Id);
+            Notify(FamilyEvents.CreateMember, memberId: fm.Id);
         }
         private void AddMembers()
         {
@@ -50,12 +51,17 @@ namespace HomeFinanceApp.Models
         }
         private void StartNewMonth()
         {
+            AddMembers();
             while (true)
             {
                 pricesOfExpensesOnMonth = ExpenseCalculator.CalculateExpensePrices();
+                _moneyContributionEvent.Reset(4);
 
                 Notify(FamilyEvents.StartNewMonth);
+
                 _monthStartEvent.Set(); // Запускаем работу семьи
+
+                _moneyContributionEvent.Wait();//ВОТ ТУТ НАДО ДОЖДАТЬСЯ ПОКА ЧЛЕНЫ СЕМЬИ ВНЕСУТ ДЕНЬГИ
 
                 DistributeMoney();
                 Thread.Sleep(2500); // Ждём распределения денег 
@@ -72,13 +78,23 @@ namespace HomeFinanceApp.Models
         {
             _thread.Start();
         }
+        public void SignalMoneyContributed()
+        {
+            _moneyContributionEvent.Signal();
+        }
         #endregion
 
         #region Family Finance Manipulation
         private void DistributeMoney()
         {
             AddMoneyToSavings(TotalAmount * 0.1m);
-            TotalAmount *= 0.9m;
+
+            Thread.Sleep(1000);
+
+            AddMoneyToAmount(-TotalAmount * 0.1m);
+
+            Thread.Sleep(1000);
+
             int cnt = _familyMembers.Where(x => x.credits.Any()).Count();
 
             foreach (var member in _familyMembers)
@@ -89,26 +105,46 @@ namespace HomeFinanceApp.Models
                     member.AddExtraMoney(Savings * 0.15m);
             }
 
-            TotalAmount = 0;
-            Savings -= Savings * cnt * 0.15m; // Из сбережений даём каждому кто имеет кредит по 15% из накоплений
+            AddMoneyToAmount(TotalAmount);
+
+
+            // Из сбережений даём каждому кто имеет кредит по 15% из накоплений
+            TakeMoneyFromSavings(Savings * cnt * 0.15m);
         }
         public void AddMoneyToSavings(decimal moneyToSavings, int memberId = -1)
         {
             lock (_savingsLock)
             {
                 Savings += moneyToSavings;
+                Notify(FamilyEvents.SavingsValueChanged, summa: Savings);
             }
+
             if (memberId != -1)
                 Notify(FamilyEvents.MemberInputMoneyToSavings, memberId, moneyToSavings);
             else
                 Notify(FamilyEvents.FamilyPostponedMoney, summa: moneyToSavings);
         }
-        public void InputMoneyToFamily(int memberId, decimal summa)
+
+        public void AddMoneyToAmount(decimal money)
         {
             lock (_amountLock)
             {
-                TotalAmount += summa;
+                TotalAmount += money;
+                Notify(FamilyEvents.AmountValueChanged, summa: TotalAmount);
             }
+        }
+        public void TakeMoneyFromSavings(decimal money)
+        {
+            lock (_savingsLock)
+            {
+                Savings -= money;
+                Notify(FamilyEvents.SavingsValueChanged, summa: Savings);
+
+            }
+        }
+        public void InputMoneyToFamily(int memberId, decimal summa)
+        {
+            AddMoneyToAmount(summa);
             Notify(FamilyEvents.MemberDropMoney, memberId, summa);
         }
         #endregion

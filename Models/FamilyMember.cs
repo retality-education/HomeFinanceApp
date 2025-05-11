@@ -58,6 +58,7 @@ namespace HomeFinanceApp.Models
 
                 _startNewMonth.WaitOne(); //Ждём пока начнётся новый месяц
 
+
                 GiveMoneyToFamily(); // Отдаём все деньги семье
 
                 _waitDistributionMoney.WaitOne(); // Ждём распределения денег
@@ -116,6 +117,8 @@ namespace HomeFinanceApp.Models
             }
             if (summa > 0)
                 _family.InputMoneyToFamily(Id, summa);
+
+            _family.SignalMoneyContributed();
         }
         private void AddOrRemoveExpenses()
         {

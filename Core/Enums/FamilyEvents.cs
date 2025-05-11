@@ -11,12 +11,16 @@ namespace HomeFinanceApp.Core.Enums
         CreateMember, //(MemberId)
 
         StartNewMonth,
+
         MemberDropMoney, //(MemberId, count) 
         MemberGetMoney, //(MemberId, count)
         MemberInputMoneyToSavings, //(MemberId, count)
         MemberNeedExtraMoneyFromMoneyBox, //(MemberId, count)
 
         FamilyPostponedMoney, //(count)
+
+        SavingsValueChanged,
+        AmountValueChanged,
 
         GatherEnded
     }
