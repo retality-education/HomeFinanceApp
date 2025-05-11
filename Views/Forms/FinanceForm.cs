@@ -56,6 +56,10 @@ namespace HomeFinanceApp.Views.Forms
         {
             ShowFamilyStatistics();
         }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ShowMemberStatistics(_idToRole.First(x => x.Value == comboBox1.SelectedIndex).Key);
+        }
 
         #region Animation Methods
         private async Task AnimateMoneyAsync(PictureBox pb, Point targetPos)
@@ -134,7 +138,7 @@ namespace HomeFinanceApp.Views.Forms
         }
         #endregion
 
-        #region New Methods for Statistics
+        #region Methods for Statistics
         public void ShowMemberStatistics(int memberId)
         {
             var stat = financeController.GetStatByRoleId(_idToRole[memberId]);
@@ -233,22 +237,24 @@ namespace HomeFinanceApp.Views.Forms
         public async void FamilyPostponedMoney(decimal money)
         {
             // Используем временную картинку для общего перемещения
-            var temp = MovementAnimation.CreatePicture(this, moneyImage, (Size)sizeOfMoney , moneysPicture.Location);
+            var temp = MovementAnimation.CreatePicture(this, moneyImage, (Size)sizeOfMoney, moneysPicture.Location);
             await Task.Run(() => AnimateMoneyAsync(temp, savingsPicture.Location));
         }
 
-       
+
         public async void StartNewMonth()
         {
             var moveTasks = new List<Task>();
             foreach (var member in _membersPictures)
             {
-                var task = Task.Run(() => {
-                    this.InvokeIfRequired(() => { 
-                    _membersMoneyPictures[member.Key].Visible = false;
-                    _membersMoneyPictures[member.Key].Location = _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_of_money;
-                });
-                return MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_near_to_table); 
+                var task = Task.Run(() =>
+                {
+                    this.InvokeIfRequired(() =>
+                    {
+                        _membersMoneyPictures[member.Key].Visible = false;
+                        _membersMoneyPictures[member.Key].Location = _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_of_money;
+                    });
+                    return MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_near_to_table);
                 });
                 moveTasks.Add(task);
             }
@@ -259,15 +265,15 @@ namespace HomeFinanceApp.Views.Forms
             var moveTasks = new List<Task>();
             foreach (var member in _membersPictures)
             {
-            
+
                 var task = Task.Run(() =>
                 {
-                    
+
                     return MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).non_visible_position);
                 });
                 moveTasks.Add(task);
             }
-            
+
             await Task.WhenAll(moveTasks);
         }
 
@@ -286,6 +292,8 @@ namespace HomeFinanceApp.Views.Forms
                 moneysLabel.Text = money.ToString();
             });
         }
+
+
 
 
         #endregion

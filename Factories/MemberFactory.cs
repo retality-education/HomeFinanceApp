@@ -22,7 +22,7 @@ namespace HomeFinanceApp.Factories
             // Добавляем начальный доход для взрослых
             if (role == MemberRole.Father || role == MemberRole.Mother)
             {
-                member.incomes.Add(new Income(IncomeTypes.Salary, role == MemberRole.Father ? 80000 : 60000));
+                member.incomes.Add(new Income(IncomeTypes.Salary, role == MemberRole.Father ? 30000 : 20000));
             }
 
             return member;

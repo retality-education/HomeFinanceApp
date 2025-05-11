@@ -34,7 +34,7 @@ namespace HomeFinanceApp.Factories
         {
             // Получаем все существующие подтипы, сгруппированные по типам
             var existingSubTypesByType = existingExpenses
-                .Where(e => e.ExpenseTypes != ExpenseTypes.Food) // Исключаем еду
+               
                 .GroupBy(e => e.ExpenseTypes)
                 .ToDictionary(
                     g => g.Key,

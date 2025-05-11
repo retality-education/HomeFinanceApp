@@ -40,6 +40,8 @@
             memberMoney1 = new PictureBox();
             memberMoney4 = new PictureBox();
             button2 = new Button();
+            comboBox1 = new ComboBox();
+            button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)table).BeginInit();
             ((System.ComponentModel.ISupportInitialize)savingsPicture).BeginInit();
             ((System.ComponentModel.ISupportInitialize)moneysPicture).BeginInit();
@@ -152,7 +154,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(670, 2);
+            button2.Location = new Point(660, 2);
             button2.Name = "button2";
             button2.Size = new Size(161, 48);
             button2.TabIndex = 11;
@@ -160,11 +162,33 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Items.AddRange(new object[] { "Сын", "Дочь", "Мать", "Отец" });
+            comboBox1.Location = new Point(184, 13);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(135, 28);
+            comboBox1.TabIndex = 12;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(12, 2);
+            button3.Name = "button3";
+            button3.Size = new Size(166, 48);
+            button3.TabIndex = 13;
+            button3.Text = "Показать статистичку члена семьи";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
             // FinanceForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(968, 521);
+            Controls.Add(button3);
+            Controls.Add(comboBox1);
             Controls.Add(button2);
             Controls.Add(memberMoney4);
             Controls.Add(memberMoney1);
@@ -202,5 +226,7 @@
         private PictureBox memberMoney1;
         private PictureBox memberMoney4;
         private Button button2;
+        private ComboBox comboBox1;
+        private Button button3;
     }
 }

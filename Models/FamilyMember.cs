@@ -131,7 +131,7 @@ namespace HomeFinanceApp.Models
         {
             int chance = (MonthlyIncome > LastMonthIncome) ? 70 : 30;
 
-            if (_rand.Next(0, 100) < chance)
+            if (true)
                 expenses.Add(FinanceFactory.CreateNewRandomExpense(expenses));
             else if (expenses.Count > 1) 
                 expenses.RemoveAt(expenses.Count - 1);
