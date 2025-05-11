@@ -35,9 +35,17 @@
             moneysLabel = new Label();
             savingsLabel = new Label();
             button1 = new Button();
+            memberMoney3 = new PictureBox();
+            memberMoney2 = new PictureBox();
+            memberMoney1 = new PictureBox();
+            memberMoney4 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)table).BeginInit();
             ((System.ComponentModel.ISupportInitialize)savingsPicture).BeginInit();
             ((System.ComponentModel.ISupportInitialize)moneysPicture).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney4).BeginInit();
             SuspendLayout();
             // 
             // table
@@ -97,11 +105,59 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // memberMoney3
+            // 
+            memberMoney3.Image = (Image)resources.GetObject("memberMoney3.Image");
+            memberMoney3.Location = new Point(534, 264);
+            memberMoney3.Name = "memberMoney3";
+            memberMoney3.Size = new Size(72, 34);
+            memberMoney3.SizeMode = PictureBoxSizeMode.StretchImage;
+            memberMoney3.TabIndex = 7;
+            memberMoney3.TabStop = false;
+            memberMoney3.Visible = false;
+            // 
+            // memberMoney2
+            // 
+            memberMoney2.Image = (Image)resources.GetObject("memberMoney2.Image");
+            memberMoney2.Location = new Point(701, 181);
+            memberMoney2.Name = "memberMoney2";
+            memberMoney2.Size = new Size(72, 34);
+            memberMoney2.SizeMode = PictureBoxSizeMode.StretchImage;
+            memberMoney2.TabIndex = 8;
+            memberMoney2.TabStop = false;
+            memberMoney2.Visible = false;
+            // 
+            // memberMoney1
+            // 
+            memberMoney1.Image = (Image)resources.GetObject("memberMoney1.Image");
+            memberMoney1.Location = new Point(434, 107);
+            memberMoney1.Name = "memberMoney1";
+            memberMoney1.Size = new Size(72, 34);
+            memberMoney1.SizeMode = PictureBoxSizeMode.StretchImage;
+            memberMoney1.TabIndex = 9;
+            memberMoney1.TabStop = false;
+            memberMoney1.Visible = false;
+            // 
+            // memberMoney4
+            // 
+            memberMoney4.Image = (Image)resources.GetObject("memberMoney4.Image");
+            memberMoney4.Location = new Point(151, 181);
+            memberMoney4.Name = "memberMoney4";
+            memberMoney4.Size = new Size(72, 34);
+            memberMoney4.SizeMode = PictureBoxSizeMode.StretchImage;
+            memberMoney4.TabIndex = 10;
+            memberMoney4.TabStop = false;
+            memberMoney4.Visible = false;
+            // 
             // FinanceForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(968, 521);
+            Controls.Add(memberMoney4);
+            Controls.Add(memberMoney1);
+            Controls.Add(memberMoney2);
+            Controls.Add(memberMoney3);
             Controls.Add(button1);
             Controls.Add(savingsLabel);
             Controls.Add(moneysLabel);
@@ -113,6 +169,10 @@
             ((System.ComponentModel.ISupportInitialize)table).EndInit();
             ((System.ComponentModel.ISupportInitialize)savingsPicture).EndInit();
             ((System.ComponentModel.ISupportInitialize)moneysPicture).EndInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)memberMoney4).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -125,5 +185,9 @@
         private Label moneysLabel;
         private Label savingsLabel;
         private Button button1;
+        private PictureBox memberMoney3;
+        private PictureBox memberMoney2;
+        private PictureBox memberMoney1;
+        private PictureBox memberMoney4;
     }
 }

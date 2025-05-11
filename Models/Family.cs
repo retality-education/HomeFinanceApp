@@ -69,6 +69,7 @@ namespace HomeFinanceApp.Models
                 _monthStartEvent.Reset(); //Снова поднимаем барьер 
                 _waitDistibutionEvent.Set(); // Запускаем работу семьи после распределения денег
 
+                Thread.Sleep(5000);
                 Notify(FamilyEvents.GatherEnded);
                 Thread.Sleep(11000); // Ждём пока члены семьи разойдутся и следующей итерации
                 _waitDistibutionEvent.Reset(); // Снова поднимаем барьер 
@@ -87,11 +88,10 @@ namespace HomeFinanceApp.Models
         #region Family Finance Manipulation
         private void DistributeMoney()
         {
-            AddMoneyToSavings(TotalAmount * 0.1m);
-
+            AddMoneyToAmount(-1m * TotalAmount * 0.1m);
             Thread.Sleep(1000);
 
-            AddMoneyToAmount(-TotalAmount * 0.1m);
+            AddMoneyToSavings(TotalAmount * 0.1m);
 
             Thread.Sleep(1000);
 
@@ -105,7 +105,7 @@ namespace HomeFinanceApp.Models
                     member.AddExtraMoney(Savings * 0.15m);
             }
 
-            AddMoneyToAmount(TotalAmount);
+            AddMoneyToAmount(-TotalAmount);
 
 
             // Из сбережений даём каждому кто имеет кредит по 15% из накоплений

@@ -11,6 +11,7 @@ using System.Data;
 using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,22 +25,28 @@ namespace HomeFinanceApp.Views
         public FinanceController financeController;
 
         private Dictionary<int, PictureBox> _membersPictures = new();
+        private Dictionary<int, PictureBox> _membersMoneyPictures = new();
         private Dictionary<int, int> _idToRole = new();
         private Point sizeOfMoney = new Point(72, 34);
         private Image moneyImage = ConvertHelper.ByteArrayToImage(Properties.Resources.money);
 
+        private List<PictureBox> _moneyPictures = new();
         private List<RoleVisual> _roleVisuals = new()
         {
-            new RoleVisual(0, new Point(424, -215), new Point(424, -1), new Point(436, 99), Properties.Resources.son),
-            new RoleVisual(1, new Point(381, 518), new Point(381, 249), new Point(524, 260), Properties.Resources.mother),
-            new RoleVisual(2, new Point(967, 109), new Point(784, 109), new Point(706, 191), Properties.Resources.daughter),
-            new RoleVisual(3, new Point(-4, 175), new Point(-4, 112), new Point(149, 194), Properties.Resources.father),
+            new RoleVisual(0, new Point(424, -230), new Point(424, -1), new Point(436, 99), Properties.Resources.son),
+            new RoleVisual(1, new Point(967, 109), new Point(795, 109), new Point(706, 191), Properties.Resources.daughter),
+            new RoleVisual(2, new Point(381, 518), new Point(381, 249), new Point(524, 260), Properties.Resources.mother),
+            new RoleVisual(3, new Point(-200, 155), new Point(10, 155), new Point(149, 194), Properties.Resources.father),
         };
         #endregion
 
         public FinanceForm()
         {
             InitializeComponent();
+            _moneyPictures = new()
+            {
+                memberMoney1, memberMoney2, memberMoney3, memberMoney4
+            };
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -47,9 +54,31 @@ namespace HomeFinanceApp.Views
         }
 
         #region Animation Methods
-        private async Task MovePictureBox(PictureBox pictureBox, Point targetPosition, int durationMs = 100)
+        private async Task AnimateMoneyAsync(PictureBox pb, Point targetPos)
         {
-            Console.WriteLine($"Moving from {pictureBox.Location} to {targetPosition}");
+            Point startPos = pb.Location;
+            int steps = 30;
+
+            for (int i = 1; i <= steps; i++)
+            {
+                float ratio = (float)i / steps;
+                ratio = (float)(1 - Math.Pow(1 - ratio, 2));
+
+                Point newPos = new Point(
+                    startPos.X + (int)((targetPos.X - startPos.X) * ratio),
+                    startPos.Y + (int)((targetPos.Y - startPos.Y) * ratio)
+                );
+
+                pb.Invoke((MethodInvoker)(() => pb.Location = newPos));
+                await Task.Delay(16);
+            }
+
+            pb.Invoke((MethodInvoker)(() => pb.Location = targetPos));
+        }
+        private async Task MovePictureBox(PictureBox pictureBox, Point targetPosition, int durationMs = 300)
+        {
+            if (pictureBox.Image == moneyImage)
+                Console.WriteLine($"Moving from {pictureBox.Location} to {targetPosition}");
             Point startPosition = pictureBox.Location;
             float distanceX = targetPosition.X - startPosition.X;
             float distanceY = targetPosition.Y - startPosition.Y;
@@ -91,19 +120,13 @@ namespace HomeFinanceApp.Views
             member.Image = _roleVisuals.First(x => x.roleId == roleId).image;
             member.Location = _roleVisuals.First(x => x.roleId == roleId).non_visible_position;
 
-            this.InvokeIfRequired(() => Controls.Add(member));
+            this.InvokeIfRequired(() =>
+            {
+                Controls.Add(member);
+                if (roleId == 2)
+                    member.BringToFront();
+            });
             return member;
-        }
-
-        private PictureBox CreateMoneyPicture(Point location)
-        {
-            var picture = new PictureBox();
-            picture.Image = moneyImage;
-            picture.Location = location;
-            picture.Size = new Size(sizeOfMoney.X, sizeOfMoney.Y);
-
-            this.InvokeIfRequired(() => Controls.Add(picture));
-            return picture;
         }
         #endregion
 
@@ -112,67 +135,103 @@ namespace HomeFinanceApp.Views
         {
             _idToRole[memberId] = roleId;
             _membersPictures[memberId] = CreateMemberDependOnRole(roleId);
-            if (roleId == 2)
-            {
-                Console.WriteLine("zxc");
-            }
-        }
 
-        public async void FamilyPostponedMoney(decimal money)
-        {
-            var temp = CreateMoneyPicture(moneysPicture.Location);
 
-            await MovePictureBox(temp, savingsPicture.Location);
-            this.InvokeIfRequired(() => Controls.Remove(temp));
-        }
-
-        public async void GatherEnded()
-        {
-            var moveTasks = new List<Task>();
-            foreach (var member in _membersPictures)
-                moveTasks.Add(MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).non_visible_position));
-
-            await Task.WhenAll(moveTasks);
-        }
-
-        public void MemberDropMoney(int memberId, decimal money)
-        {
             this.InvokeIfRequired(() =>
             {
-                var tempMoney = CreateMoneyPicture(_roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money);
+                _moneyPictures[memberId].Visible = false;
+                _moneyPictures[memberId].Location = _roleVisuals.First(x => x.roleId == roleId).position_of_money;
+                _membersMoneyPictures[memberId] = _moneyPictures[memberId];
             });
         }
 
         public async void MemberGetMoney(int memberId, decimal money)
         {
-            var temp = CreateMoneyPicture(moneysPicture.Location);
+            var moneyPic = _membersMoneyPictures[memberId];
+            moneyPic.Invoke((MethodInvoker)(() =>
+            {
+                moneyPic.Location = moneysPicture.Location;
+                moneyPic.Visible = true;
+                moneyPic.BringToFront();
+            }));
 
-            await MovePictureBox(temp, _roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money);
+            var targetPos = _roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money;
+            await Task.Run(() => AnimateMoneyAsync(moneyPic, targetPos));
+
+            moneyPic.Invoke((MethodInvoker)(() => moneyPic.Visible = false));
         }
 
         public async void MemberInputMoneyToSavings(int memberId, decimal money)
         {
-            var temp = CreateMoneyPicture(_roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money);
-            await MovePictureBox(temp, savingsPicture.Location);
-            this.InvokeIfRequired(() => Controls.Remove(temp));
+            var moneyPic = _membersMoneyPictures[memberId];
+            moneyPic.Invoke((MethodInvoker)(() => moneyPic.Visible = true));
+
+            await AnimateMoneyAsync(moneyPic, savingsPicture.Location);
+
+            moneyPic.Invoke((MethodInvoker)(() => moneyPic.Visible = false));
         }
 
         public async void MemberNeedExtraMoneyFromMoneyBox(int memberId, decimal money)
         {
-            var temp = CreateMoneyPicture(savingsPicture.Location);
+            var moneyPic = _membersMoneyPictures[memberId];
+            moneyPic.Invoke((MethodInvoker)(() =>
+            {
+                moneyPic.Location = savingsPicture.Location;
+                moneyPic.Visible = true;
+            }));
 
-            await MovePictureBox(temp, _roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money);
-            this.InvokeIfRequired(() => Controls.Remove(temp));
+            var targetPos = _roleVisuals.First(x => x.roleId == _idToRole[memberId]).position_of_money;
+            await AnimateMoneyAsync(moneyPic, targetPos);
         }
 
+        public async void MemberDropMoney(int memberId, decimal money)
+        {
+            var moneyPic = _membersMoneyPictures[memberId];
+            _membersMoneyPictures[memberId].Invoke((MethodInvoker)(() => _membersMoneyPictures[memberId].Visible = true));
+
+            await AnimateMoneyAsync(_membersMoneyPictures[memberId], moneysPicture.Location);
+
+            _membersMoneyPictures[memberId].Invoke((MethodInvoker)(() => _membersMoneyPictures[memberId].Visible = false));
+        }
+
+        public async void FamilyPostponedMoney(decimal money)
+        {
+            // Используем временную картинку для общего перемещения
+            var temp = MovementAnimation.CreatePicture(this, moneyImage, (Size)sizeOfMoney , moneysPicture.Location);
+            await Task.Run(() => AnimateMoneyAsync(temp, savingsPicture.Location));
+        }
+
+       
         public async void StartNewMonth()
         {
             var moveTasks = new List<Task>();
             foreach (var member in _membersPictures)
             {
-                var task = Task.Run(() => MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_near_to_table));
+                var task = Task.Run(() => {
+                    this.InvokeIfRequired(() => { 
+                    _membersMoneyPictures[member.Key].Visible = false;
+                    _membersMoneyPictures[member.Key].Location = _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_of_money;
+                });
+                return MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).position_near_to_table); 
+                });
                 moveTasks.Add(task);
             }
+            await Task.WhenAll(moveTasks);
+        }
+        public async void GatherEnded()
+        {
+            var moveTasks = new List<Task>();
+            foreach (var member in _membersPictures)
+            {
+            
+                var task = Task.Run(() =>
+                {
+                    
+                    return MovePictureBox(member.Value, _roleVisuals.First(x => x.roleId == _idToRole[member.Key]).non_visible_position);
+                });
+                moveTasks.Add(task);
+            }
+            
             await Task.WhenAll(moveTasks);
         }
 

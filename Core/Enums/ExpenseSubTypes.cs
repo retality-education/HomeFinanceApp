@@ -8,7 +8,7 @@ namespace HomeFinanceApp.Core.Enums
 {
         internal enum ExpenseSubTypes
         {
-            Food = 10,
+            Food = 11,
 
             // Подтипы для Utilities
             Electricity = 21,

@@ -41,7 +41,7 @@ namespace HomeFinanceApp.Models
             ManualResetEvent startNewMonth, ManualResetEvent waitDistributionMoney
             )
         {
-            Id = ++MemberId;
+            Id = MemberId++;
             this.Name = Name;
             this.memberRole = memberRole;
             _family = family;
@@ -58,6 +58,7 @@ namespace HomeFinanceApp.Models
 
                 _startNewMonth.WaitOne(); //Ждём пока начнётся новый месяц
 
+                Thread.Sleep(1000);
 
                 GiveMoneyToFamily(); // Отдаём все деньги семье
 
@@ -78,11 +79,13 @@ namespace HomeFinanceApp.Models
         public void AddExtraMoney(decimal money)
         {
             MonthlyIncome += money;
+            CurrentlyMoney += money;
             _family.Notify(FamilyEvents.MemberNeedExtraMoneyFromMoneyBox, Id, money);
         }
         public void AddMonthMoney(decimal money)
         {
             MonthlyIncome += money;
+            CurrentlyMoney += money;
             _family.Notify(FamilyEvents.MemberGetMoney, Id, money);
         }
         private void UpdateMoneyIncomes()
@@ -168,11 +171,17 @@ namespace HomeFinanceApp.Models
                 {
                     //с шансом 50% берём кредит на потребность
                     if (_rand.Next(0, 10) < 5)
+                    {
                         credits.Add(FinanceFactory.CreateCredit(expense, money - CurrentlyMoney));
-                    else //либо кладём оставшиеся деньги в сберегательный фонд
+                        CurrentlyMoney = 0;
+                        break;
+                    }
+                    if (CurrentlyMoney != 0) //либо кладём оставшиеся деньги в сберегательный фонд
+                    {
                         _family.AddMoneyToSavings(CurrentlyMoney, Id);
-
-                    CurrentlyMoney = 0;
+                        CurrentlyMoney = 0;
+                        break;
+                    }
                 }
             }
 
